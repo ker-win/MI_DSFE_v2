@@ -1,5 +1,6 @@
 
 import numpy as np
+import mne
 from sklearn.model_selection import StratifiedKFold
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
@@ -9,6 +10,42 @@ def run_single_fold(X_train, y_train, X_test, y_test, fs, fixed_band_fta=None, f
     """
     Run DSFE pipeline for a single fold.
     """
+    # 0. CSP Pre-filtering (Optional)
+    if config.USE_CSP_PRE_FILTERING:
+        if config.VERBOSE: print("  Running CSP Pre-filtering...")
+        
+        # Filter data for CSP training
+        f_low, f_high = config.CSP_PRE_FILTER_BAND
+        X_train_filt = mne.filter.filter_data(X_train, fs, l_freq=f_low, h_freq=f_high, verbose=False)
+        X_train_filt = np.ascontiguousarray(X_train_filt, dtype=np.float64) # Ensure float64 for MNE CSP
+        
+        # Fit CSP
+        # Use same regularization as FBCSP to be safe
+        csp_pre = mne.decoding.CSP(n_components=config.N_CSP_COMPONENTS, 
+                                   reg=config.CSP_REG, 
+                                   rank=config.CSP_RANK, 
+                                   log=None, # Must be None if transform_into='csp_space'
+                                   norm_trace=False,
+                                   transform_into='csp_space') 
+        
+        csp_pre.fit(X_train_filt, y_train)
+        
+        # Project data to CSP space
+        # transform() usually returns features (log variance), but we want the time series.
+        # MNE CSP has transform_into='csp_space' which returns (n_epochs, n_channels, n_times)
+        # But wait, MNE CSP.transform() returns features by default.
+        # We need to manually project or use transform_into='csp_space' if available in this version.
+        # Checking MNE docs/source implies transform_into parameter exists in init but behavior depends on it.
+        # If transform_into='csp_space', transform() returns the projected data.
+        
+        X_train = np.ascontiguousarray(X_train, dtype=np.float64)
+        X_test = np.ascontiguousarray(X_test, dtype=np.float64)
+        
+        X_train = csp_pre.transform(X_train)
+        X_test = csp_pre.transform(X_test)
+        
+        if config.VERBOSE: print(f"    Data projected to CSP space. New shape: {X_train.shape}")
+
     # 1. Band Selection (FDCC)
     # We need to determine bands for FTA and RG
     if config.USE_FDCC:
