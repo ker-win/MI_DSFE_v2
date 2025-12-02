@@ -89,12 +89,16 @@ def reliefF_impl(X, y, n_neighbors=20, n_features_to_keep=10):
     
     return idx_selected, weights
 
-def fuse_features(F_fta, F_rg, y):
+def fuse_features(feature_list, y):
     """
-    Concatenate features and apply ReliefF if enabled.
+    Concatenate features from a list and apply ReliefF if enabled.
+    feature_list: list of numpy arrays (n_samples, n_features_i)
     """
     # Concatenate
-    F_all = np.concatenate([F_fta, F_rg], axis=1)
+    if not feature_list:
+        raise ValueError("No features provided for fusion.")
+        
+    F_all = np.concatenate(feature_list, axis=1)
     n_features = F_all.shape[1]
     
     if not config.USE_RELIEFF:

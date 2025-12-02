@@ -50,3 +50,9 @@ USE_RG = False        # Riemannian Geometry features
 USE_FDCC = True     # Feature-Dependent Band Selection (if False, use full 0-30Hz)
 USE_RELIEFF = True   # Feature Selection (if False, use all features)
 USE_ENSEMBLE = True  # Ensemble Learning (if False, use single SVM)
+FIXED_BEST_BAND_MODE = False    # If True, select best band using FDCC on whole dataset before CV
+USE_FBCSP = True     # Filter Bank Common Spatial Patterns
+FBCSP_BANDS = [(4, 8), (8, 12), (12, 16), (16, 20), (20, 24), (24, 28), (28, 32), (32, 36), (36, 40)]
+N_CSP_COMPONENTS = 2 # Number of components per band (reduced to 2 for 3-channel data)
+CSP_REG = 0.001      # Regularization for CSP (to avoid LinAlgError)
+CSP_RANK = None      # Rank for CSP (None = estimate)
