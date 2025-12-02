@@ -1,0 +1,15 @@
+subject,modality,date,run,accuracy
+子朕,MI,merged,merged,0.5275862068965517
+彥廷,ME,merged,merged,0.58
+彥廷,MI,merged,merged,0.5800000000000001
+柏宇,ME,merged,merged,0.9800000000000001
+柏宇,MI,merged,merged,0.4989473684210526
+淙睿,ME,merged,merged,0.7066666666666667
+淙睿,MI,merged,merged,0.45910931174089065
+濬騰,ME,merged,merged,0.8355555555555556
+濬騰,MI,merged,merged,0.5307692307692308
+程翔,ME,merged,merged,0.5644444444444444
+程翔,MI,merged,merged,0.4377777777777778
+育呈,MI,merged,merged,0.5133004926108374
+顯閔,ME,merged,merged,0.5377777777777778
+顯閔,MI,merged,merged,0.4377777777777778
